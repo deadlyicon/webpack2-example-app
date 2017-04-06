@@ -144,13 +144,25 @@ module.exports = {
       {
         test: /\.sass$/,
         // use: ExtractTextPlugin.extract("style-loader", "css!sass?sourceMap")
-        use: ExtractTextPlugin.extract({
+        use:  ExtractTextPlugin.extract({
           fallback: "style-loader",
           use: [
-            "css-loader",
-            "sass-loader",
-          ],
-          // publicPath: "/dist"
+            {
+              loader: "css-loader",
+              options: {
+                sourceMap: true,
+                modules: true,
+                importLoaders: true,
+                localIdentName: "[name]__[local]___[hash:base64:5]"
+              }
+            },
+            {
+              loader: "sass-loader",
+              options: {
+                sourceMap: true
+              }
+            }
+          ]
         })
       },
       {
@@ -170,6 +182,7 @@ module.exports = {
     new HtmlWebpackPlugin({
       inject: true,
       template: __dirname+'/src/index.html',
+      // favicon: __dirname+'/src/favicon.ico',
       minify: {
         removeComments: true,
         collapseWhitespace: true,
@@ -188,7 +201,11 @@ module.exports = {
     // new webpack.optimize.OccurrenceOrderPlugin(),
     // // Try to dedupe duplicated modules, if any:
     // new webpack.optimize.DedupePlugin(),
-    new ExtractTextPlugin('browser.css')
+    new ExtractTextPlugin({
+      filename: "browser.css",
+      disable: false,
+      allChunks: true
+    })
   ]
 };
 
